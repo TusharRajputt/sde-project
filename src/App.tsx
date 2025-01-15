@@ -60,15 +60,13 @@ function App() {
 
               {/* Right Panel */}
               <div className="hidden lg:block w-80">
-                <RightPanel isAuthenticated={isAuthenticated} />
+                <RightPanel />
               </div>
             </div>
           </div>
+          <Footer />
         </main>
       </div>
-
-      {/* Footer */}
-      <Footer />
     </div>
   );
 }
