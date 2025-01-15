@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Menu, X, User } from 'lucide-react';
 
 type NavbarProps = {
@@ -10,6 +10,23 @@ type NavbarProps = {
 
 export default function Navbar({ toggleSidebar, isSidebarOpen, isAuthenticated, onAuthChange }: NavbarProps) {
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [scrollDirection, setScrollDirection] = useState<'up' | 'down' | null>(null);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      if (currentScrollY > lastScrollY) {
+        setScrollDirection('down');
+      } else if (currentScrollY < lastScrollY) {
+        setScrollDirection('up');
+      }
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
 
   const handleAuth = () => {
     if (isAuthenticated) {
@@ -20,14 +37,18 @@ export default function Navbar({ toggleSidebar, isSidebarOpen, isAuthenticated, 
   };
 
   return (
-    <nav className="shadow-md">
+    <nav
+      className={`fixed top-0 left-0 right-0 shadow-md bg-white transition-transform duration-300 z-50 ${
+        scrollDirection === 'down' ? '-translate-y-full' : 'translate-y-0'
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
             <button
               onClick={toggleSidebar}
               className="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-              aria-label={isSidebarOpen ? "Close sidebar" : "Open sidebar"}
+              aria-label={isSidebarOpen ? 'Close sidebar' : 'Open sidebar'}
             >
               {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -61,11 +82,13 @@ export default function Navbar({ toggleSidebar, isSidebarOpen, isAuthenticated, 
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-96">
             <h2 className="text-xl font-bold mb-4">Sign In</h2>
-            <form onSubmit={(e) => {
-              e.preventDefault();
-              onAuthChange(true);
-              setShowAuthModal(false);
-            }}>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                onAuthChange(true);
+                setShowAuthModal(false);
+              }}
+            >
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Email</label>
