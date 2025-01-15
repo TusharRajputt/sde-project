@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Menu, X, User } from 'lucide-react';
 
 type NavbarProps = {
@@ -10,23 +10,6 @@ type NavbarProps = {
 
 export default function Navbar({ toggleSidebar, isSidebarOpen, isAuthenticated, onAuthChange }: NavbarProps) {
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [scrollDirection, setScrollDirection] = useState<'up' | 'down' | null>(null);
-  const [lastScrollY, setLastScrollY] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      if (currentScrollY > lastScrollY) {
-        setScrollDirection('down');
-      } else if (currentScrollY < lastScrollY) {
-        setScrollDirection('up');
-      }
-      setLastScrollY(currentScrollY);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
 
   const handleAuth = () => {
     if (isAuthenticated) {
@@ -37,11 +20,7 @@ export default function Navbar({ toggleSidebar, isSidebarOpen, isAuthenticated, 
   };
 
   return (
-    <nav
-      className={`fixed top-0 left-0 right-0 shadow-md bg-white transition-transform duration-300 z-50 ${
-        scrollDirection === 'down' ? '-translate-y-full' : 'translate-y-0'
-      }`}
-    >
+    <nav className="fixed top-0 left-0 right-0 shadow-md bg-white z-50">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
